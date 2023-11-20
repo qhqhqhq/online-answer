@@ -51,12 +51,12 @@
                         document.getElementById('timeRemaining').textContent = data.remaining_type;
                         break;
                     case "metadata":
-                        document.getElementById('textMessage').textContent = data.content;
+                        document.getElementById('textMessage').textContent = data.question_number + ". " + data.content;
                         document.getElementById('targetEliminations').textContent = '目标淘汰数: ' + data.target_eliminated_count;
                         document.getElementById('totalTeams').textContent = '队伍总数: ' + data.group_count;
                         document.getElementById('eliminatedTeams').textContent = '已淘汰的队伍数: ' + data.eliminated_group_count;
                         document.getElementById('answer').textContent = '答案: --';
-                        document.getElementById('lastEliminated').textContent = '上一轮淘汰的队伍: --';
+                        document.getElementById('lastEliminated').textContent = '本轮淘汰的队伍: --';
 
                         break;
                     case "result":
