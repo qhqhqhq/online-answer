@@ -75,7 +75,8 @@ func (r *Round1) Init(candidates []uint, targetEC int, answerTime int, initialSc
 		}
 
 	} else {
-		err := cli.Preload("Members").Where(&model.Group{Eliminate: false, Promotion: false}).Find(&groups).Error
+		// err := cli.Preload("Members").Where(&model.Group{Eliminate: false, Promotion: false}).Find(&groups).Error
+		err := cli.Preload("Members").Where("eliminate = ? AND promotion = ?", false, false).Find(&groups).Error
 		if err != nil {
 			return err
 		}
@@ -107,9 +108,11 @@ func (r *Round1) Init(candidates []uint, targetEC int, answerTime int, initialSc
 
 func (r *Round1) Run(ctx context.Context) {
 	defer r.destroy()
-	for r.EliminatedGroupCount < r.TargetEliminatedCount {
+	loop := true
+	for loop && r.EliminatedGroupCount < r.TargetEliminatedCount {
 		select {
 		case <-ctx.Done():
+			loop = false
 			break
 		default:
 			r.sendGroupsScore()
@@ -178,6 +181,7 @@ func (r *Round1) AnswerQuestion(groupNumber uint, openId string, answer bool) (b
 		return true, nil
 	}
 
+	memberState.AnswerCorrect = false
 	return false, nil
 
 }
@@ -347,5 +351,6 @@ func (r *Round1) destroy() {
 	}
 
 	r.initialized = false
+	log.Println("round destroy")
 
 }

@@ -55,7 +55,7 @@ func (r *Round2) Init(targetScore int, targetPC int, remainingTime int, cancel c
 	r.PlayerStateMap = make(map[uint]*GroupState)
 	cli := db.Get()
 	var groups []*model.Group
-	err := cli.Preload("Members").Where(&model.Group{Eliminate: false, Promotion: false}).Find(&groups).Error
+	err := cli.Preload("Members").Where("eliminate = ? AND promotion = ?", false, false).Find(&groups).Error
 	if err != nil {
 		return err
 	}
@@ -78,9 +78,11 @@ func (r *Round2) Init(targetScore int, targetPC int, remainingTime int, cancel c
 func (r *Round2) Run(ctx context.Context) {
 	defer r.Destroy()
 	r.Start = true
-	for r.RemainingTime > 0 {
+	loop := true
+	for loop && r.RemainingTime > 0 {
 		select {
 		case <-ctx.Done():
+			loop = false
 			break
 		default:
 			time.Sleep(1 * time.Second)
@@ -130,8 +132,10 @@ func (r *Round2) Run(ctx context.Context) {
 			}
 		}
 
-		for _, v := range groupScores[beg:end] {
-			candidates = append(candidates, v.number)
+		if beg < len(groupScores) {
+			for _, v := range groupScores[beg:end] {
+				candidates = append(candidates, v.number)
+			}
 		}
 
 		log.Println("group scores: ", groupScores)
@@ -169,6 +173,8 @@ func (r *Round2) Destroy() {
 	}
 
 	r.initialized = false
+
+	log.Println("round destroy")
 }
 
 func (r *Round2) IncrementScore(groupNumber uint, OpenId string) (int, error) {
@@ -263,7 +269,7 @@ func (r *Round2) promoteGroup(groupNumber uint) error {
 	}
 
 	var collegePromotedCount int64
-	err = cli.Where(&model.Group{College: group.College, Promotion: true}).Count(&collegePromotedCount).Error
+	err = cli.Model(&model.Group{}).Where(&model.Group{College: group.College, Promotion: true}).Count(&collegePromotedCount).Error
 	if err != nil {
 		return err
 	}
@@ -278,6 +284,7 @@ func (r *Round2) promoteGroup(groupNumber uint) error {
 	}
 	r.PromotionGroups = append(r.PromotionGroups, groupNumber)
 	groupState.promotion = true
+	log.Println("success promote the group: ", groupNumber)
 
 	if len(r.PromotionGroups) >= r.TargetPromotionCount {
 		r.Terminate()

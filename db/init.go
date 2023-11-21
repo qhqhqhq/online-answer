@@ -3,6 +3,7 @@ package db
 import (
 	"fmt"
 	"log"
+	"online-answer/db/model"
 	"os"
 
 	"gorm.io/driver/mysql"
@@ -33,6 +34,7 @@ func Init() error {
 		log.Println("DB open error, err=", err.Error())
 		return err
 	}
+	db.AutoMigrate(&model.Group{}, &model.User{}, &model.JudgementQuestion{}, &model.ChoiceQuestion{}, &model.QuestionOption{}, &model.Record{})
 
 	dbInstance = db
 	log.Println("finish init mysql")

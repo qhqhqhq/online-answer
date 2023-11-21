@@ -9,6 +9,7 @@ import (
 	"online-answer/db"
 	"online-answer/db/model"
 	"online-answer/utils"
+	"os"
 
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -84,8 +85,8 @@ func HandleLogout(w http.ResponseWriter, r *http.Request) {
 }
 
 func fetchWXCode2Session(code string) (*WXCode2SessionResponse, error) {
-	const APP_ID = ""
-	const APP_SECRET = ""
+	var APP_ID = os.Getenv("APP_ID")
+	var APP_SECRET = os.Getenv("APP_SECRET")
 
 	var code2sessionResp WXCode2SessionResponse
 	url := fmt.Sprintf("https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code", APP_ID, APP_SECRET, code)

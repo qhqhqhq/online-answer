@@ -33,5 +33,5 @@ func main() {
 	http.HandleFunc("/admin/start_round2", service.HandleStartRound2)
 	http.HandleFunc("/admin/cancel_round2", service.HandleCancelRound2)
 
-	log.Fatal(http.ListenAndServe(":80", nil))
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }
