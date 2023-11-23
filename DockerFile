@@ -18,6 +18,9 @@ RUN apk add ca-certificates
 
 WORKDIR /app
 
-COPY --from=builder /app/main /app/static/ /app/Round1DisplayIndex.html /app/
+COPY --from=builder /app/main /app/
+COPY --from=builder /app/static/ /app/static/
+COPY --from=builder /app/Round1DisplayIndex.html /app/
+
 
 CMD ["/app/main"]
