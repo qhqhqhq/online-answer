@@ -302,9 +302,7 @@ func (r *Round1) settle() error {
 			}
 			memberState.mutex.Lock()
 
-			if memberState.AnswerCorrect {
-				memberState.Score++
-			} else {
+			if !memberState.AnswerCorrect {
 				memberState.Score--
 			}
 			memberState.AnswerCorrect = false

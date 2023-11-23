@@ -145,7 +145,15 @@ func (r *Round2) Run(ctx context.Context) {
 		Result:     utils.JoinUintSlice(r.PromotionGroups, ","),
 		Candidates: utils.JoinUintSlice(candidates, ","),
 	})
-	log.Println("promotion map: ", r.PlayerStateMap)
+	log.Println("promotion map: ")
+	for number, groupState := range r.PlayerStateMap {
+		log.Printf("group %d: promoted %v\n", number, groupState.promotion)
+		log.Printf("members score: ")
+		for openId, memberState := range groupState.MemberMap {
+			log.Printf("%s: %d, ", openId, memberState.score)
+		}
+		log.Printf("\n")
+	}
 	log.Println("promotion groups: ", r.PromotionGroups)
 
 	log.Println("round ended")
