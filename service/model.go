@@ -10,6 +10,7 @@ type WXCode2SessionResponse struct {
 
 type LoginRequest struct {
 	Code   string `json:"code"`
+	Name   string `json:"name"`
 	Secret string `json:"secret"`
 }
 

@@ -13,6 +13,10 @@ func main() {
 		panic(fmt.Sprintf("mysql init failed with %+v", err))
 	}
 
+	// 设置静态文件目录
+	fs := http.FileServer(http.Dir("./static"))
+	http.Handle("/static/", http.StripPrefix("/static/", fs))
+
 	// auth
 	http.HandleFunc("/login", service.HandleLogin)
 	http.HandleFunc("/logout", service.HandleLogout)

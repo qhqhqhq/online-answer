@@ -34,6 +34,7 @@ type GroupState struct {
 }
 
 type PlayerState struct {
+	name      string
 	score     int
 	promotion bool
 }
@@ -62,7 +63,7 @@ func (r *Round2) Init(targetScore int, targetPC int, remainingTime int, cancel c
 	for _, group := range groups {
 		newMemberMap := make(map[string]*PlayerState)
 		for _, member := range group.Members {
-			playerState := &PlayerState{score: 0, promotion: false}
+			playerState := &PlayerState{name: member.Name, score: 0, promotion: false}
 			newMemberMap[member.OpenID] = playerState
 		}
 		r.PlayerStateMap[group.Number] = &GroupState{promotion: false, MemberMap: newMemberMap}
@@ -149,8 +150,8 @@ func (r *Round2) Run(ctx context.Context) {
 	for number, groupState := range r.PlayerStateMap {
 		log.Printf("group %d: promoted %v\n", number, groupState.promotion)
 		log.Printf("members score: ")
-		for openId, memberState := range groupState.MemberMap {
-			log.Printf("%s: %d, ", openId, memberState.score)
+		for _, memberState := range groupState.MemberMap {
+			log.Printf("%s: %d, ", memberState.name, memberState.score)
 		}
 		log.Printf("\n")
 	}

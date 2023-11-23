@@ -53,7 +53,7 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// 添加新成员
-		if err := tx.Save(&model.User{OpenID: wxresp.Openid, GroupNumber: group.Number}).Error; err != nil {
+		if err := tx.Save(&model.User{OpenID: wxresp.Openid, Name: loginReq.Name, GroupNumber: group.Number}).Error; err != nil {
 			return err
 		}
 

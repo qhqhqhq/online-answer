@@ -5,38 +5,83 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Round1 Display</title>
     <style>
+       body {
+            background-repeat: no-repeat;
+            background-size: cover;
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            height: 100vh;
+        }
+
         .centered {
-            text-align: center;
-            font-size: 24px;
-            font-weight: bold;
+            display: flex;
+            height: 50%; /* 保留图片的上下四分之一 */
+            align-items: center;
+            position: relative;
         }
-        .time-remaining {
-            font-size: 96px;
-            color: red;
+
+        .left, .right {
+            flex-basis: 25%; /* 分配左右两侧部分的宽度 */
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            align-items: center;
         }
+
+        .middle {
+            flex-basis: 50%; /* 分配中间部分的宽度 */
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #timeRemaining {
+            font-size: 192px; /* 大数字样式 */
+        }
+
+        #textMessage {
+            font-size: 24px; /* 判断题文本样式 */
+            margin-top: 10%;
+        }
+
         .data-field {
-            margin: 10px 0;
-            font-size: 18px; 
+            font-size: 18px; /* 其他信息文本样式 */
         }
-        .text-message {
-            text-align: justify; 
-            margin: 20px 10%; 
-        }
+
+        .bottom-section {
+            /* align-self: flex-end;  */
+            margin-top: 100px; /* 推到底部 */
+        } 
     </style>
 </head>
 <body>
-    <div id="timeRemaining" class="centered time-remaining">--</div>
-    <div id="textMessage" class="centered text-message">Waiting for message...</div>
     <div class="centered">
-        <div id="targetEliminations" class="data-field">目标淘汰数: --</div>
-        <div id="totalTeams" class="data-field">队伍总数: --</div>
-        <div id="eliminatedTeams" class="data-field">已淘汰的队伍数: --</div>
-        <div id="answer" class="data-field">上一轮答案: --</div>
-        <div id="lastEliminated" class="data-field">上一轮淘汰的队伍: --</div>
+        <div class="left">
+            <div id="timeRemaining" class="time-remaining">--</div>
+        </div>
+        <div class="middle">
+            <div id="textMessage" class="text-message">waiting for question...</div>
+            <div class="bottom-section">
+                <div id="targetEliminations" class="data-field">目标淘汰数: --</div>
+                <div id="totalTeams" class="data-field">队伍总数: --</div>
+                <div id="eliminatedTeams" class="data-field">已淘汰的队伍数: --</div>
+            </div>
+        </div>
+        <div class="right">
+            <div id="answer" class="data-field">上一轮答案: --</div>
+            <div id="lastEliminated" class="data-field">上一轮淘汰的队伍: --</div>
+        </div>
     </div>
 
     <script>
         (function() {
+            document.body.style.backgroundImage = `url(http://${location.host}/static/image.png)`;
+            // document.body.style.backgroundRepeat = 'no-repeat';
+            // document.body.style.backgroundSize = 'cover';
             var ws = new WebSocket(`ws://${location.host}/round1/ws/display`); 
 
             ws.onopen = function() {
@@ -58,8 +103,8 @@
 
                         break;
                     case "result":
-                        document.getElementById('answer').textContent = '答案: ' + data.answer;
-                        document.getElementById('lastEliminated').textContent = '本轮淘汰的队伍: ' + data.last_eliminated_groups;
+                        document.getElementById('answer').textContent = '上一轮答案: ' + data.answer;
+                        document.getElementById('lastEliminated').textContent = '上一轮淘汰的队伍: ' + data.last_eliminated_groups;
 
                         break;
                 
