@@ -11,9 +11,12 @@ import (
 	"sort"
 	"sync"
 	"time"
+
+	"github.com/gorilla/websocket"
 )
 
 var Round2Instance = Round2{Start: false}
+var Round2CenterConnection *websocket.Conn
 
 type Round2 struct {
 	Start                bool
@@ -88,6 +91,7 @@ func (r *Round2) Run(ctx context.Context) {
 		default:
 			time.Sleep(1 * time.Second)
 			r.RemainingTime--
+			r.sendMsg(fmt.Sprintf("time,%d", r.RemainingTime))
 		}
 	}
 	r.Start = false
@@ -293,6 +297,7 @@ func (r *Round2) promoteGroup(groupNumber uint) error {
 	}
 	r.PromotionGroups = append(r.PromotionGroups, groupNumber)
 	groupState.promotion = true
+	r.sendMsg(fmt.Sprintf("promotion,%v", groupNumber))
 	log.Println("success promote the group: ", groupNumber)
 
 	if len(r.PromotionGroups) >= r.TargetPromotionCount {
@@ -300,4 +305,10 @@ func (r *Round2) promoteGroup(groupNumber uint) error {
 	}
 
 	return nil
+}
+
+func (r *Round2) sendMsg(msg string) {
+	if Round2CenterConnection != nil {
+		Round2CenterConnection.WriteMessage(websocket.TextMessage, []byte(msg))
+	}
 }

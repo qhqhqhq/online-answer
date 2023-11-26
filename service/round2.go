@@ -2,11 +2,14 @@ package service
 
 import (
 	"encoding/json"
+	"fmt"
+	"log"
 	"net/http"
 	"online-answer/db"
 	"online-answer/db/model"
 	"online-answer/service/round"
 	"online-answer/utils"
+	"os"
 )
 
 func HandleRound2State(w http.ResponseWriter, r *http.Request) {
@@ -98,4 +101,35 @@ func HandleRound2Submit(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
 	w.Write(msg)
 
+}
+
+func HandleRound2DisplayIndex(w http.ResponseWriter, r *http.Request) {
+	b, err := os.ReadFile("./Round2DisplayIndex.html")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	fmt.Fprint(w, string(b))
+}
+
+func HandleWSRound2Display(w http.ResponseWriter, r *http.Request) {
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	defer conn.Close()
+	round.Round2CenterConnection = conn
+	defer func() {
+		round.Round2CenterConnection = nil
+	}()
+
+	for {
+		_, _, err := conn.ReadMessage()
+		if err != nil {
+			log.Println(err)
+			return
+		}
+	}
 }

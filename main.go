@@ -25,6 +25,8 @@ func main() {
 	http.HandleFunc("/round2/state", service.HandleRound2State)
 	http.HandleFunc("/round2/getquestion", service.HandleRound2GetQuestion)
 	http.HandleFunc("/round2/submit", service.HandleRound2Submit)
+	http.HandleFunc("/round2/display", service.HandleRound2DisplayIndex)
+	http.HandleFunc("/round2/ws/display", service.HandleWSRound2Display)
 
 	// round1
 	http.HandleFunc("/round1/ws/player", service.HandleWSRound1Player)

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Round1 Display</title>
+    <style>
+       body {
+            margin: 0;
+            padding: 0;
+            background-repeat: no-repeat;
+            background-size: cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .content-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 50%; /* 中间 50% 的高度 */
+            text-align: center;
+        }
+
+        #timeRemaining {
+            font-size: 96px; /* 大号字体 */
+            color: white; /* 白色文本 */
+            margin-bottom: 20px;
+        }
+
+        p {
+            font-size: 20px;
+            color: white; /* 白色文本 */
+        }
+
+    </style>
+</head>
+<body>
+    <div class="content-container">
+        <div id="timeRemaining">00:00</div>
+        <p id="promotion_groups">晋级队伍：</p>
+    </div>
+
+    <script>
+        (function() {
+            document.body.style.backgroundImage = `url(http://${location.host}/static/image.webp)`;
+            // document.body.style.backgroundRepeat = 'no-repeat';
+            // document.body.style.backgroundSize = 'cover';
+            var ws = new WebSocket(`ws://${location.host}/round2/ws/display`); 
+
+            ws.onopen = function() {
+                console.log('Connected to the WebSocket server');
+            };
+
+            ws.onmessage = function(event) {
+                var data = event.data.split(",");
+
+                switch (data[0]) {
+                    case "time":
+                        const time = Number(data[1]);
+                        const second = time % 60
+                        const minute = (time - second) / 60 
+
+                        const timeText = minute + ":" + second
+                        document.getElementById('timeRemaining').textContent = timeText;
+                        break;
+                    case "promotion":
+                        document.getElementById('promotion_groups').textContent += (data[1] + "  ") ;
+
+                        break;
+                    default:
+                        break;
+                }
+
+
+                // 更新页面元素
+            };
+
+            ws.onerror = function(error) {
+                console.log('WebSocket Error: ' + error);
+            };
+
+            ws.onclose = function() {
+                console.log('WebSocket connection closed');
+            };
+        })();
+
+    </script>
+</body>
+</html>
