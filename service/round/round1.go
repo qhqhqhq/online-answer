@@ -141,6 +141,13 @@ func (r *Round1) Run(ctx context.Context) {
 	log.Println("group count: ", r.GroupCount)
 	log.Println("eliminated group count: ", r.EliminatedGroupCount)
 	log.Println("last eliminated groups: ", r.LastEliminatedGroups)
+	for _, v := range r.LastEliminatedGroups {
+		groupState := r.PlayersMap[v]
+		log.Println("group: ", v)
+		for k, v := range groupState.MembersMap {
+			log.Printf("player: %v; score: %v; eliminated: %v", k, v.Score, v.Eliminated)
+		}
+	}
 	log.Println("players map: ", r.PlayersMap)
 
 	log.Println("round ended")
